@@ -49,6 +49,8 @@ export default function Dashboard() {
         } finally {
           setLoading(false)
         }
+      } else {
+        setLoading(false)
       }
     }
     fetchWorkouts()
@@ -73,7 +75,7 @@ export default function Dashboard() {
           className="mb-8"
         >
           <h1 className="text-3xl font-bold text-text-primary mb-2">
-            {greeting()}, {profile?.full_name?.split(' ')[0] || 'Athlete'}
+            {greeting()}, {user ? (profile?.full_name?.split(' ')[0] || 'Athlete') : 'Guest'}
           </h1>
           <p className="text-text-secondary">
             Ready to crush your fitness goals today?
@@ -108,7 +110,7 @@ export default function Dashboard() {
           className="grid md:grid-cols-2 gap-4 mb-8"
         >
           {quickActions.map((action, index) => (
-            <Link key={index} to={action.link}>
+            <Link key={index} to={user ? action.link : '/login?mode=signup'}>
               <Card
                 hover
                 glow={action.primary}
@@ -137,7 +139,7 @@ export default function Dashboard() {
         >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-text-primary">Recent Workouts</h2>
-            <Link to="/history">
+            <Link to={user ? "/history" : "/login?mode=signup"}>
               <Button variant="ghost" size="sm" icon={<ArrowRight className="w-4 h-4" />} iconPosition="right">
                 View All
               </Button>
@@ -178,7 +180,7 @@ export default function Dashboard() {
               </div>
               <h3 className="font-semibold text-text-primary mb-2">No workouts yet</h3>
               <p className="text-text-muted mb-6">Generate your first workout to get started</p>
-              <Link to="/generate">
+              <Link to={user ? "/generate" : "/login?mode=signup"}>
                 <Button icon={<Plus className="w-4 h-4" />}>Generate Workout</Button>
               </Link>
             </Card>

@@ -28,7 +28,7 @@ export default function Navbar() {
           <Logo />
 
           <div className="hidden md:flex items-center gap-1">
-            {user && navLinks.map((link) => (
+            {navLinks.filter(link => user || link.path === '/dashboard').map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
@@ -87,7 +87,7 @@ export default function Navbar() {
           className="md:hidden border-t border-border"
         >
           <div className="px-4 py-4 space-y-2">
-            {user && navLinks.map((link) => (
+            {navLinks.filter(link => user || link.path === '/dashboard').map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
