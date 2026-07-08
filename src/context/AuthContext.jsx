@@ -3,12 +3,27 @@ import { supabase } from '../config/supabase'
 
 const AuthContext = createContext(null)
 
+function requireSupabase() {
+  if (!supabase) {
+    throw new Error(
+      'Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your .env file.'
+    )
+  }
+
+  return supabase
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!supabase) {
+      setLoading(false)
+      return
+    }
+
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       setUser(session?.user ?? null)
@@ -34,7 +49,8 @@ export function AuthProvider({ children }) {
   }, [])
 
   const fetchProfile = async (userId) => {
-    const { data, error } = await supabase
+    const client = requireSupabase()
+    const { data, error } = await client
       .from('profiles')
       .select('*')
       .eq('id', userId)
@@ -46,7 +62,8 @@ export function AuthProvider({ children }) {
   }
 
   const signIn = async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const client = requireSupabase()
+    const { data, error } = await client.auth.signInWithPassword({
       email,
       password,
     })
@@ -55,7 +72,8 @@ export function AuthProvider({ children }) {
   }
 
   const signUp = async (email, password, fullName) => {
-    const { data, error } = await supabase.auth.signUp({
+    const client = requireSupabase()
+    const { data, error } = await client.auth.signUp({
       email,
       password,
       options: {
@@ -65,17 +83,21 @@ export function AuthProvider({ children }) {
     if (error) throw error
 
     if (data.user) {
-      await supabase.from('profiles').insert({
+      const { error: profileError } = await client.from('profiles').insert({
         id: data.user.id,
         full_name: fullName,
       })
+      if (profileError) {
+        console.error('Error creating profile:', profileError)
+      }
     }
 
     return data
   }
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
+    const client = requireSupabase()
+    const { error } = await client.auth.signOut()
     if (error) throw error
     setUser(null)
     setProfile(null)
@@ -84,7 +106,8 @@ export function AuthProvider({ children }) {
   const updateProfile = async (updates) => {
     if (!user) return
 
-    const { data, error } = await supabase
+    const client = requireSupabase()
+    const { data, error } = await client
       .from('profiles')
       .update(updates)
       .eq('id', user.id)

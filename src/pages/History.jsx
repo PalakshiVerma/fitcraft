@@ -150,11 +150,10 @@ export default function History() {
                       setGoalFilter(filter.id)
                       setShowFilters(false)
                     }}
-                    className={`w-full px-4 py-2 text-left text-sm transition-colors ${
-                      goalFilter === filter.id
+                    className={`w-full px-4 py-2 text-left text-sm transition-colors ${goalFilter === filter.id
                         ? 'bg-primary-500/20 text-primary-500'
                         : 'text-text-secondary hover:bg-surface hover:text-text-primary'
-                    }`}
+                      }`}
                   >
                     {filter.label}
                   </button>
@@ -268,18 +267,17 @@ export default function History() {
             <Card>
               <p className="text-text-muted text-sm">Top Goal</p>
               <p className="text-2xl font-bold text-text-primary capitalize">
-                {workouts.length > 0
-                  ? workouts.reduce((acc, w) => {
-                      acc[w.goal] = (acc[w.goal] || 0) + 1
-                      return acc
-                    }, {})[Object.keys(workouts.reduce((acc, w) => {
-                      acc[w.goal] = (acc[w.goal] || 0) + 1
-                      return acc
-                    }, {})).reduce((a, b) =>
-                      workouts.reduce((acc, w) => { acc[w.goal] = (acc[w.goal] || 0) + 1; return acc }, {})[a] >
-                      workouts.reduce((acc, w) => { acc[w.goal] = (acc[w.goal] || 0) + 1; return acc }, {})[b] ? a : b
-                    )].replace('_', ' ')
-                  : '-'}
+                {(() => {
+                  if (workouts.length === 0) return '-'
+                  const goalCounts = workouts.reduce((acc, w) => {
+                    acc[w.goal] = (acc[w.goal] || 0) + 1
+                    return acc
+                  }, {})
+                  const topGoal = Object.keys(goalCounts).reduce((a, b) =>
+                    goalCounts[a] > goalCounts[b] ? a : b
+                  )
+                  return topGoal.replace('_', ' ')
+                })()}
               </p>
             </Card>
             <Card>

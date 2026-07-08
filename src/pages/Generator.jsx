@@ -174,18 +174,22 @@ export default function Generator() {
 
     setSaving(true)
     try {
-      await createWorkout({
+      const workoutData = {
         user_id: user.id,
         name: workoutName,
         goal: selections.goal,
         duration_minutes: selections.duration,
         equipment: selections.equipment,
         exercises: generatedWorkout.exercises,
-      })
+      }
+      console.log('Saving workout data:', workoutData)
+      await createWorkout(workoutData)
       setSaveModal(false)
       navigate('/history')
     } catch (err) {
       console.error('Failed to save workout:', err)
+      console.error('Error details:', JSON.stringify(err, null, 2))
+      alert('Failed to save workout. Check console for details.')
     } finally {
       setSaving(false)
     }

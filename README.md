@@ -1,8 +1,24 @@
-# React + Vite
+# FitCraft
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A fitness application built with React + Vite, featuring workout generation, progress tracking, and more.
 
-Currently, two official plugins are available:
+## Getting Started
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+First, install dependencies:
+
+```bash
+npm install
+```
+
+Then, run the development server:
+
+```bash
+npm run dev
+```
+
+## Available Scripts
+
+- `npm run dev`: Starts the development server
+- `npm run build`: Builds for production
+- `npm run lint`: Runs ESLint
+- `npm run preview`: Previews the production build locally
