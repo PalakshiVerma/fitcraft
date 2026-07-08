@@ -82,11 +82,11 @@ export default function Landing() {
               <Link to="/login">
                 <Button variant="ghost">Sign In</Button>
               </Link>
-              <Link to="/login?mode=signup">
+              <Link to="/dashboard">
                 <Button variant="primary">Start Free</Button>
               </Link>
             </div>
-            <Link to="/login" className="md:hidden">
+            <Link to="/dashboard" className="md:hidden">
               <Button variant="primary" size="sm">Get Started</Button>
             </Link>
           </div>
@@ -129,7 +129,7 @@ export default function Landing() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link to="/login?mode=signup">
+            <Link to="/dashboard">
               <Button size="xl" icon={<ChevronRight className="w-5 h-5" />} iconPosition="right" className="glow-primary">
                 Start Your Journey
               </Button>
@@ -299,7 +299,7 @@ export default function Landing() {
           <p className="text-text-secondary mb-8 max-w-xl mx-auto">
             Join thousands of users who have already discovered the power of AI-generated workouts.
           </p>
-          <Link to="/login?mode=signup">
+          <Link to="/dashboard">
             <Button size="xl" icon={<ChevronRight className="w-5 h-5" />} iconPosition="right" className="animate-pulse-glow">
               Get Started Free
             </Button>
