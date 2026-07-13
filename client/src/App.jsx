@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
-import { isSupabaseConfigured } from './config/supabase'
+
 import Landing from './pages/Landing'
 import Auth from './pages/Auth'
 import Dashboard from './pages/Dashboard'
@@ -90,24 +90,12 @@ function AppRoutes() {
   )
 }
 
-function ConfigNotice() {
-  if (isSupabaseConfigured) {
-    return null
-  }
 
-  return (
-    <div className="bg-primary-500/10 border-b border-primary-500/20 px-4 py-3 text-center text-sm text-primary-200">
-      Supabase is not configured yet. Copy <code className="text-primary-100">.env.example</code> to{' '}
-      <code className="text-primary-100">.env</code> and add your project URL and anon key to enable login.
-    </div>
-  )
-}
 
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <ConfigNotice />
         <AppRoutes />
       </AuthProvider>
     </BrowserRouter>

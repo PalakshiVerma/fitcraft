@@ -56,7 +56,7 @@ export default function Auth() {
       }
       navigate('/dashboard')
     } catch (err) {
-      setError(err.message || 'An error occurred. Please try again.')
+      setError(err.response?.data?.error || err.message || 'An error occurred. Please try again.')
     } finally {
       setLoading(false)
     }

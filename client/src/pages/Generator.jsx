@@ -217,13 +217,12 @@ export default function Generator() {
               <div key={step.id} className="flex-1 flex items-center">
                 <div className="flex flex-col items-center flex-1">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-colors ${
-                      index < currentStep
+                    className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-colors ${index < currentStep
                         ? 'bg-primary-500 text-white'
                         : index === currentStep
-                        ? 'bg-primary-500/20 border-2 border-primary-500 text-primary-500'
-                        : 'bg-dark-300 border border-border text-text-muted'
-                    }`}
+                          ? 'bg-primary-500/20 border-2 border-primary-500 text-primary-500'
+                          : 'bg-dark-300 border border-border text-text-muted'
+                      }`}
                   >
                     {index < currentStep ? (
                       <Check className="w-5 h-5" />
@@ -232,18 +231,16 @@ export default function Generator() {
                     )}
                   </div>
                   <span
-                    className={`text-xs text-center hidden sm:block ${
-                      index <= currentStep ? 'text-text-primary' : 'text-text-muted'
-                    }`}
+                    className={`text-xs text-center hidden sm:block ${index <= currentStep ? 'text-text-primary' : 'text-text-muted'
+                      }`}
                   >
                     {step.title}
                   </span>
                 </div>
                 {index < steps.length - 1 && (
                   <div
-                    className={`h-0.5 flex-1 mx-2 transition-colors ${
-                      index < currentStep ? 'bg-primary-500' : 'bg-border'
-                    }`}
+                    className={`h-0.5 flex-1 mx-2 transition-colors ${index < currentStep ? 'bg-primary-500' : 'bg-border'
+                      }`}
                   />
                 )}
               </div>
@@ -275,22 +272,19 @@ export default function Generator() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setSelections((s) => ({ ...s, goal: goal.id }))}
-                      className={`p-4 rounded-xl text-left transition-all ${
-                        selections.goal === goal.id
+                      className={`p-4 rounded-xl text-left transition-all ${selections.goal === goal.id
                           ? 'bg-primary-500/20 border-2 border-primary-500'
                           : 'bg-dark-300 border border-border hover:border-primary-500/50'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-3 mb-2">
                         <goal.icon
-                          className={`w-6 h-6 ${
-                            selections.goal === goal.id ? 'text-primary-500' : 'text-text-muted'
-                          }`}
+                          className={`w-6 h-6 ${selections.goal === goal.id ? 'text-primary-500' : 'text-text-muted'
+                            }`}
                         />
                         <span
-                          className={`font-semibold ${
-                            selections.goal === goal.id ? 'text-primary-500' : 'text-text-primary'
-                          }`}
+                          className={`font-semibold ${selections.goal === goal.id ? 'text-primary-500' : 'text-text-primary'
+                            }`}
                         >
                           {goal.label}
                         </span>
@@ -323,21 +317,18 @@ export default function Generator() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setSelections((s) => ({ ...s, duration: dur.id }))}
-                      className={`p-6 rounded-xl text-center transition-all ${
-                        selections.duration === dur.id
+                      className={`p-6 rounded-xl text-center transition-all ${selections.duration === dur.id
                           ? 'bg-primary-500/20 border-2 border-primary-500'
                           : 'bg-dark-300 border border-border hover:border-primary-500/50'
-                      }`}
+                        }`}
                     >
                       <Clock
-                        className={`w-8 h-8 mx-auto mb-2 ${
-                          selections.duration === dur.id ? 'text-primary-500' : 'text-text-muted'
-                        }`}
+                        className={`w-8 h-8 mx-auto mb-2 ${selections.duration === dur.id ? 'text-primary-500' : 'text-text-muted'
+                          }`}
                       />
                       <p
-                        className={`text-2xl font-bold ${
-                          selections.duration === dur.id ? 'text-primary-500' : 'text-text-primary'
-                        }`}
+                        className={`text-2xl font-bold ${selections.duration === dur.id ? 'text-primary-500' : 'text-text-primary'
+                          }`}
                       >
                         {dur.label}
                       </p>
@@ -369,19 +360,17 @@ export default function Generator() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => toggleEquipment(eq.id)}
-                      className={`p-4 rounded-xl text-left transition-all ${
-                        selections.equipment.includes(eq.id)
+                      className={`p-4 rounded-xl text-left transition-all ${selections.equipment.includes(eq.id)
                           ? 'bg-primary-500/20 border-2 border-primary-500'
                           : 'bg-dark-300 border border-border hover:border-primary-500/50'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         <div
-                          className={`w-6 h-6 rounded-md flex items-center justify-center ${
-                            selections.equipment.includes(eq.id)
+                          className={`w-6 h-6 rounded-md flex items-center justify-center ${selections.equipment.includes(eq.id)
                               ? 'bg-primary-500'
                               : 'bg-dark-200 border border-border'
-                          }`}
+                            }`}
                         >
                           {selections.equipment.includes(eq.id) && (
                             <Check className="w-4 h-4 text-white" />
