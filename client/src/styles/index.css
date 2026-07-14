@@ -12,20 +12,24 @@
   --color-primary-800: #7b492a;
   --color-primary-900: #b56d38;
 
-  --color-dark-50: #1a1f26;
-  --color-dark-100: #151a1f;
-  --color-dark-200: #111827;
-  --color-dark-300: #0d1218;
-  --color-dark-400: #0B0F14;
-  --color-dark-500: #07090c;
-  --color-dark-600: #040506;
-  --color-dark-700: #020203;
-  --color-dark-800: #010101;
+  /* Blue-violet ink rather than neutral charcoal: glass looks dead over a
+     flat grey, and the field's violet/cyan need a base to sit in. Warm
+     primary is untouched — it stays the brand, and now reads as the one
+     warm thing in a cool room. */
+  --color-dark-50: #1e2438;
+  --color-dark-100: #191e30;
+  --color-dark-200: #141928;
+  --color-dark-300: #101420;
+  --color-dark-400: #0a0d16;
+  --color-dark-500: #070910;
+  --color-dark-600: #04050a;
+  --color-dark-700: #020204;
+  --color-dark-800: #010102;
   --color-dark-900: #000000;
 
-  --color-surface: #111827;
-  --color-surface-hover: #1a2332;
-  --color-border: #1f2937;
+  --color-surface: #141928;
+  --color-surface-hover: #1e2438;
+  --color-border: #2a3145;
   --color-text-primary: #E5E7EB;
   --color-text-secondary: #9CA3AF;
   --color-text-muted: #6B7280;
@@ -38,8 +42,20 @@
   box-sizing: border-box;
 }
 
+/* Smooth scrolling is native. Deliberately NOT a scroll-hijack library
+   (Lenis/Locomotive): those animate a transform on a page wrapper every
+   frame, and a moving transformed ancestor forces every backdrop-filter
+   beneath it to recompute — with ~11 SVG-filtered glass panels on the
+   Landing page that trades a little inertia for a lot of jank. Smoothness
+   here comes from not dropping frames in the first place. */
 html {
   scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 body {
@@ -49,6 +65,40 @@ body {
   color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ambient field the glass refracts.
+   Liquid glass only reads if there is something behind it worth bending:
+   three hues (amber / violet / cyan) give the rim a prism fringe that a
+   single-hue field cannot, and the fine grid gives the eye straight lines
+   it can watch buckle at the edge of every panel.
+
+   PERF, load-bearing: this is one `position: fixed` layer, NOT
+   `background-attachment: fixed`. Fixed-attachment backgrounds repaint the
+   whole page on every scroll frame, and each repaint re-runs every one of
+   the SVG-filtered backdrops on screen — that was the scroll jank. As a
+   fixed pseudo-element it is promoted once and then only composited, so
+   scrolling costs nothing to redraw. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--color-dark-400);
+  background-image:
+    radial-gradient(60rem 44rem at 78% 6%, rgba(124, 92, 214, 0.26), transparent 62%),
+    radial-gradient(48rem 40rem at 10% 20%, rgba(199, 129, 73, 0.24), transparent 64%),
+    radial-gradient(52rem 42rem at 70% 84%, rgba(45, 164, 191, 0.20), transparent 62%),
+    radial-gradient(44rem 36rem at 18% 94%, rgba(124, 92, 214, 0.16), transparent 64%),
+    repeating-linear-gradient(to right, rgba(229, 231, 235, 0.035) 0 1px, transparent 1px 56px),
+    repeating-linear-gradient(to bottom, rgba(229, 231, 235, 0.035) 0 1px, transparent 1px 56px);
+}
+
+/* Page roots all fill this colour opaquely, which would hide the field
+   above. Let it through — body already paints the base colour underneath. */
+.bg-dark-400 {
+  background-color: transparent;
 }
 
 ::-webkit-scrollbar {
@@ -69,18 +119,45 @@ body {
   background: var(--color-primary-500);
 }
 
+/* Tint + rim dressing. The refraction itself is applied inline by
+   lib/liquidGlass.js (it overrides backdrop-filter); the blur here is the
+   pre-JS / no-JS paint. Tint alpha is deliberately low — at the old 0.7 the
+   panel painted over the very refraction it is meant to show. The inset
+   highlight is the lit top edge, the inset dark line the far wall, and the
+   drop shadow lifts the panel off the field so the rim reads as thickness. */
 .glass {
-  background: rgba(17, 24, 39, 0.7);
+  --glass-rim:
+    inset 0 1px 0 0 rgba(233, 231, 255, 0.16),
+    inset 0 -1px 0 0 rgba(4, 5, 10, 0.5),
+    0 8px 32px rgba(4, 5, 10, 0.45);
+  background: rgba(20, 25, 40, 0.26);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(31, 41, 55, 0.5);
+  border: 1px solid rgba(233, 231, 255, 0.11);
+  box-shadow: var(--glass-rim);
 }
 
 .glass-strong {
-  background: rgba(17, 24, 39, 0.85);
+  --glass-rim:
+    inset 0 1px 0 0 rgba(233, 231, 255, 0.20),
+    inset 0 -1px 0 0 rgba(4, 5, 10, 0.55),
+    0 10px 40px rgba(4, 5, 10, 0.5);
+  background: rgba(20, 25, 40, 0.40);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(31, 41, 55, 0.6);
+  border: 1px solid rgba(233, 231, 255, 0.14);
+  box-shadow: var(--glass-rim);
+}
+
+/* Refraction unsupported (Safari/Firefox): the library sets .lg-fallback and
+   swaps in a plain frosted blur. Push the tint back up — without the bent rim
+   there is nothing to see through, and a thin panel just reads as murky. */
+.lg-fallback.glass {
+  background: rgba(20, 25, 40, 0.6);
+}
+
+.lg-fallback.glass-strong {
+  background: rgba(20, 25, 40, 0.75);
 }
 
 .glow-primary {
@@ -89,6 +166,18 @@ body {
 
 .glow-primary-strong {
   box-shadow: 0 0 30px rgba(199, 129, 73, 0.5);
+}
+
+/* On a glass panel the glow must compose with the rim, not replace it —
+   a bare box-shadow here would drop the lit edge and the lift shadow. */
+.glass.glow-primary,
+.glass-strong.glow-primary {
+  box-shadow: var(--glass-rim), 0 0 20px rgba(199, 129, 73, 0.3);
+}
+
+.glass.glow-primary-strong,
+.glass-strong.glow-primary-strong {
+  box-shadow: var(--glass-rim), 0 0 30px rgba(199, 129, 73, 0.5);
 }
 
 .text-gradient {

@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Dumbbell, Target, Clock, Zap, TrendingUp, Shield, ChevronRight, Star } from 'lucide-react'
-import Button from '../components/Button'
+import Button, { SMALL_GLASS } from '../components/Button'
 import Logo from '../components/Logo'
+import LiquidGlass from '../components/LiquidGlass'
+import heroBg from '../assets/MixCollage-14-Jul-2026-11-13-AM-531.jpg'
 import { APP_CONFIG } from '../config/app'
 
 const features = [
@@ -68,10 +70,45 @@ const testimonials = [
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-dark-400">
+    <div className="relative min-h-screen">
+      {/* Page-wide static backdrop: ONE image behind the whole landing page,
+          not a per-section background. Every section below is transparent so
+          this shows through, and the glass cards now refract the photo itself
+          — which is the best backdrop the effect can have.
+
+          A `position: fixed` element rather than `background-attachment:
+          fixed`: both keep the image still while content scrolls, but a fixed
+          element is promoted to its own compositor layer and never repaints,
+          whereas fixed-attachment repaints the page every scroll frame and
+          re-runs every glass filter (that was the earlier jank). This also
+          works on iOS, where fixed attachment does not. */}
+      <div
+        className="fixed inset-0 z-[-1] bg-cover bg-center"
+        style={{ backgroundImage: `url(${heroBg})` }}
+        aria-hidden="true"
+      />
+      {/* Scrim. Still load-bearing — the collage has a near-white panel and
+          plain copy sits over the photo — but pulled back from 85% to 60%:
+          at 85% it was smothering the image and the whole page read as a
+          dark slab. */}
+      <div className="fixed inset-0 z-[-1] bg-dark-400/60" aria-hidden="true" />
+      {/* Lift. The photo is mostly black, so simply removing scrim cannot
+          brighten the page — there is nothing bright underneath to reveal.
+          Light has to be added: a soft top-down glow that gives the page a
+          light source and stops it reading as flat and unlit. */}
+      <div
+        className="fixed inset-0 z-[-1] bg-[radial-gradient(70rem_45rem_at_50%_-5%,rgba(233,231,255,0.16),transparent_65%)]"
+        aria-hidden="true"
+      />
+      {/* The photo is greyscale — this wash is what gives the glass rims a
+          colour to split into a prism fringe. Warmed up alongside the lift. */}
+      <div
+        className="fixed inset-0 z-[-1] bg-gradient-to-b from-primary-500/20 via-transparent to-primary-600/15"
+        aria-hidden="true"
+      />
+
       {/* Hero Section */}
       <header className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary-500/10 to-transparent" />
         <div className="absolute top-20 left-1/4 w-72 h-72 bg-primary-500/20 rounded-full blur-[120px]" />
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-primary-600/10 rounded-full blur-[150px]" />
 
@@ -98,10 +135,17 @@ export default function Landing() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-400 text-sm font-medium mb-6">
+            {/* Pill glass: explicit radius because the library reads
+                border-radius, and rounded-full resolves to 9999px — far
+                larger than the element, which distorts the displacement map. */}
+            <LiquidGlass
+              as={motion.span}
+              glassOptions={{ ...SMALL_GLASS, radius: 18 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-primary-400 text-sm font-medium mb-6"
+            >
               <Zap className="w-4 h-4" />
               AI-Powered Fitness
-            </span>
+            </LiquidGlass>
           </motion.div>
 
           <motion.h1
@@ -135,7 +179,7 @@ export default function Landing() {
               </Button>
             </Link>
             <Link to="#features">
-              <Button variant="secondary" size="xl">
+              <Button variant="glass" size="xl">
                 Learn More
               </Button>
             </Link>
@@ -181,27 +225,30 @@ export default function Landing() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => (
-              <motion.div
+              <LiquidGlass
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="glass rounded-2xl p-6 hover:glow-primary transition-all duration-300"
+                className="rounded-2xl p-6 hover:glow-primary transition-all duration-300"
               >
                 <div className="w-12 h-12 rounded-xl bg-primary-500/20 flex items-center justify-center mb-4">
                   <feature.icon className="w-6 h-6 text-primary-500" />
                 </div>
                 <h3 className="text-lg font-semibold text-text-primary mb-2">{feature.title}</h3>
                 <p className="text-text-secondary text-sm">{feature.description}</p>
-              </motion.div>
+              </LiquidGlass>
             ))}
           </div>
         </div>
       </section>
 
       {/* How It Works */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-dark-300">
+      {/* No bg-dark-300 band here — an opaque section would cover the one
+          static image, which is the whole point. Depth now comes from the
+          photo behind it, not from a different fill. */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -223,18 +270,19 @@ export default function Landing() {
               { step: '02', title: 'Configure Details', desc: 'Pick your duration and available equipment.' },
               { step: '03', title: 'Get Your Plan', desc: 'AI generates a personalized workout instantly.' },
             ].map((item, index) => (
-              <motion.div
+              <LiquidGlass
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="relative text-center"
+                className="relative text-center rounded-2xl p-8"
               >
-                <div className="text-6xl font-bold text-primary-500/20 mb-4">{item.step}</div>
+                <div className="text-6xl font-bold text-primary-500/30 mb-4">{item.step}</div>
                 <h3 className="text-xl font-semibold text-text-primary mb-2">{item.title}</h3>
                 <p className="text-text-secondary">{item.desc}</p>
-              </motion.div>
+              </LiquidGlass>
             ))}
           </div>
         </div>
@@ -259,13 +307,13 @@ export default function Landing() {
 
           <div className="grid md:grid-cols-3 gap-6">
             {testimonials.map((testimonial, index) => (
-              <motion.div
+              <LiquidGlass
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="glass rounded-2xl p-6"
+                className="rounded-2xl p-6"
               >
                 <div className="flex items-center gap-3 mb-4">
                   <img
@@ -279,7 +327,7 @@ export default function Landing() {
                   </div>
                 </div>
                 <p className="text-text-secondary italic">"{testimonial.content}"</p>
-              </motion.div>
+              </LiquidGlass>
             ))}
           </div>
         </div>
@@ -287,11 +335,12 @@ export default function Landing() {
 
       {/* CTA Section */}
       <section className="py-24 px-4 sm:px-6 lg:px-8">
-        <motion.div
+        <LiquidGlass
+          strong
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="max-w-4xl mx-auto glass-strong rounded-3xl p-8 sm:p-12 text-center"
+          className="max-w-4xl mx-auto rounded-3xl p-8 sm:p-12 text-center"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-text-primary mb-4">
             Ready to Transform Your Fitness?
@@ -304,7 +353,7 @@ export default function Landing() {
               Get Started Free
             </Button>
           </Link>
-        </motion.div>
+        </LiquidGlass>
       </section>
 
       {/* Footer */}

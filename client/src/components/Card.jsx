@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import LiquidGlass from './LiquidGlass'
 
 export default function Card({
   children,
@@ -16,10 +16,10 @@ export default function Card({
   }
 
   return (
-    <motion.div
+    <LiquidGlass
       whileHover={hover ? { y: -4, transition: { duration: 0.2 } } : {}}
       className={`
-        glass rounded-2xl
+        rounded-2xl
         ${paddings[padding]}
         ${glow ? 'glow-primary' : ''}
         ${className}
@@ -27,6 +27,6 @@ export default function Card({
       {...props}
     >
       {children}
-    </motion.div>
+    </LiquidGlass>
   )
 }

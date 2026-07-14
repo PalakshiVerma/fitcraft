@@ -8,6 +8,7 @@ import { Mail, Lock, User, Eye, EyeOff, ArrowLeft } from 'lucide-react'
 import Button from '../components/Button'
 import Input from '../components/Input'
 import Logo from '../components/Logo'
+import LiquidGlass from '../components/LiquidGlass'
 import { useAuth } from '../context/AuthContext'
 
 const loginSchema = z.object({
@@ -87,7 +88,7 @@ export default function Auth() {
           Back to home
         </Link>
 
-        <div className="glass-strong rounded-2xl p-8">
+        <LiquidGlass strong className="rounded-2xl p-8">
           <div className="text-center mb-8">
             <Logo size="lg" link={false} className="justify-center mb-4" />
             <h1 className="text-2xl font-bold text-text-primary mb-2">
@@ -175,7 +176,7 @@ export default function Auth() {
               </button>
             </p>
           </div>
-        </div>
+        </LiquidGlass>
 
         <p className="text-center text-text-muted text-xs mt-6">
           By continuing, you agree to our Terms of Service and Privacy Policy.

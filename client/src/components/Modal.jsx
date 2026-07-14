@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
+import LiquidGlass from './LiquidGlass'
 
 export default function Modal({
   isOpen,
@@ -26,14 +27,15 @@ export default function Modal({
             onClick={onClose}
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
           />
-          <motion.div
+          <LiquidGlass
+            strong
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className={`
               fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
               w-full ${sizes[size]} mx-4
-              glass-strong rounded-2xl z-50
+              rounded-2xl z-50
               max-h-[90vh] overflow-y-auto
             `}
           >
@@ -51,7 +53,7 @@ export default function Modal({
               </div>
             )}
             <div className="p-6">{children}</div>
-          </motion.div>
+          </LiquidGlass>
         </>
       )}
     </AnimatePresence>
