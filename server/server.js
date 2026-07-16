@@ -19,8 +19,10 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/fitcraft')
 // Routes
 const workoutRoutes = require('./routes/workouts');
 const authRoutes = require('./routes/auth');
+const generateRoutes = require('./routes/generate');
 app.use('/api/workouts', workoutRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/generate', generateRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
