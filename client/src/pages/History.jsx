@@ -28,22 +28,41 @@ export default function History() {
   const [deleteModal, setDeleteModal] = useState(false)
   const [workoutToDelete, setWorkoutToDelete] = useState(null)
   const [deleting, setDeleting] = useState(false)
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
-    fetchWorkouts()
+    fetchWorkouts(1)
   }, [user])
 
-  const fetchWorkouts = async () => {
+  const fetchWorkouts = async (pageNum = 1, append = false) => {
     if (user) {
       try {
-        const data = await getWorkouts(user.id)
-        setWorkouts(data)
+        if (!append) setLoading(true)
+        const data = await getWorkouts(user.id, { page: pageNum, limit: 10 })
+        const fetchedWorkouts = data.workouts || data
+        
+        if (append) {
+          setWorkouts((prev) => [...prev, ...fetchedWorkouts])
+        } else {
+          setWorkouts(fetchedWorkouts)
+        }
+        
+        if (data.pagination) {
+          setTotalPages(data.pagination.totalPages)
+        }
       } catch (err) {
         console.error('Failed to fetch workouts:', err)
       } finally {
         setLoading(false)
       }
     }
+  }
+
+  const handleLoadMore = () => {
+    const nextPage = page + 1
+    setPage(nextPage)
+    fetchWorkouts(nextPage, true)
   }
 
   const filteredWorkouts = workouts.filter((workout) => {
@@ -224,6 +243,14 @@ export default function History() {
                 </motion.div>
               ))}
             </AnimatePresence>
+            
+            {page < totalPages && (
+              <div className="flex justify-center mt-6">
+                <Button variant="secondary" onClick={handleLoadMore} loading={loading}>
+                  Load More
+                </Button>
+              </div>
+            )}
           </motion.div>
         ) : (
           <Card className="text-center py-16">

@@ -42,8 +42,8 @@ export default function Dashboard() {
     async function fetchWorkouts() {
       if (user) {
         try {
-          const workouts = await getWorkouts(user.id, { limit: 5 })
-          setRecentWorkouts(workouts)
+          const response = await getWorkouts(user.id, { limit: 5 })
+          setRecentWorkouts(response.workouts || response)
         } catch (err) {
           console.error('Failed to fetch workouts:', err)
         } finally {

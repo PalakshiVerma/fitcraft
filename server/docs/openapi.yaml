@@ -1,0 +1,204 @@
+openapi: 3.0.0
+info:
+  title: FitCraft API
+  description: API for FitCraft workout generation and tracking app.
+  version: 1.0.0
+servers:
+  - url: /api
+    description: Local API server
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 6
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad request (email already exists)
+        '500':
+          description: Server error
+  /auth/login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Invalid credentials
+  /workouts:
+    get:
+      summary: Get all workouts
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+            maximum: 50
+      responses:
+        '200':
+          description: A list of workouts and pagination metadata
+    post:
+      summary: Create a workout
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - goal
+                - duration_minutes
+              properties:
+                name:
+                  type: string
+                goal:
+                  type: string
+                duration_minutes:
+                  type: integer
+                equipment:
+                  type: array
+                  items:
+                    type: string
+                exercises:
+                  type: array
+                  items:
+                    type: object
+                notes:
+                  type: string
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Invalid request
+  /workouts/{id}:
+    get:
+      summary: Get a single workout
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Workout found
+        '404':
+          description: Workout not found
+    put:
+      summary: Update a workout
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Workout updated
+        '404':
+          description: Workout not found
+    delete:
+      summary: Delete a workout
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Workout deleted
+        '404':
+          description: Workout not found
+  /generate:
+    post:
+      summary: Generate a workout via AI
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - goal
+                - duration
+                - equipment
+              properties:
+                goal:
+                  type: string
+                duration:
+                  type: integer
+                equipment:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: AI generated workout plan
+        '400':
+          description: Bad request
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Server error
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

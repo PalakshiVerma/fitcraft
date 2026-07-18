@@ -7,7 +7,7 @@ const User = require('../models/User');
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_for_development';
 
 // Register
-router.post('/register', async (req, res) => {
+router.post('/register', async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -30,12 +30,12 @@ router.post('/register', async (req, res) => {
 
     res.status(201).json({ token, user: { uid: user._id.toString(), email: user.email } });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // Login
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -57,7 +57,7 @@ router.post('/login', async (req, res) => {
 
     res.status(200).json({ token, user: { uid: user._id.toString(), email: user.email } });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 

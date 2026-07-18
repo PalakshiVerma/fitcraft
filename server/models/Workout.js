@@ -1,5 +1,13 @@
 const mongoose = require('mongoose');
 
+const exerciseSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  sets: { type: Number, required: true },
+  reps: { type: String, required: true },
+  rest: { type: String, required: true },
+  notes: { type: String }
+}, { _id: false });
+
 const workoutSchema = new mongoose.Schema({
   userId: {
     type: String,
@@ -23,7 +31,7 @@ const workoutSchema = new mongoose.Schema({
     default: []
   },
   exercises: {
-    type: mongoose.Schema.Types.Mixed, // Equivalent to JSONB in Postgres, stores anything
+    type: [exerciseSchema],
     required: true
   },
   notes: {
