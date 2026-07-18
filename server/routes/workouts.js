@@ -7,12 +7,30 @@ const verifyToken = require('../middleware/authMiddleware');
 router.use(verifyToken);
 
 // Get all workouts for the logged in user
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
-    const workouts = await Workout.find({ userId: req.user.uid }).sort({ createdAt: -1 });
-    res.json(workouts);
+    const page = parseInt(req.query.page, 10) || 1;
+    let limit = parseInt(req.query.limit, 10) || 10;
+    if (limit > 50) limit = 50;
+
+    const skip = (page - 1) * limit;
+
+    const [workouts, total] = await Promise.all([
+      Workout.find({ userId: req.user.uid }).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Workout.countDocuments({ userId: req.user.uid })
+    ]);
+
+    res.json({
+      workouts,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
@@ -31,13 +49,13 @@ router.post('/', async (req, res) => {
 });
 
 // Get a single workout
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req, res, next) => {
   try {
     const workout = await Workout.findOne({ _id: req.params.id, userId: req.user.uid });
     if (!workout) return res.status(404).json({ error: 'Workout not found' });
     res.json(workout);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
@@ -57,13 +75,13 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete a workout
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req, res, next) => {
   try {
     const workout = await Workout.findOneAndDelete({ _id: req.params.id, userId: req.user.uid });
     if (!workout) return res.status(404).json({ error: 'Workout not found' });
     res.json({ message: 'Workout deleted successfully' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 

@@ -3,6 +3,7 @@ const router = express.Router();
 const rateLimit = require('express-rate-limit');
 const { GoogleGenAI } = require('@google/genai');
 const verifyToken = require('../middleware/authMiddleware');
+const generationCache = require('../utils/generationCache');
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -12,7 +13,7 @@ const generateLimiter = rateLimit({
   message: 'Too many requests from this IP, please try again after an hour'
 });
 
-router.post('/', verifyToken, generateLimiter, async (req, res) => {
+router.post('/', verifyToken, generateLimiter, async (req, res, next) => {
   try {
     const { goal, duration, equipment } = req.body;
 
@@ -21,6 +22,11 @@ router.post('/', verifyToken, generateLimiter, async (req, res) => {
     }
     if (!Array.isArray(equipment)) {
       return res.status(400).json({ message: 'equipment must be an array.' });
+    }
+
+    const cachedPlan = generationCache.get(goal, duration, equipment);
+    if (cachedPlan) {
+      return res.json({ ...cachedPlan, cached: true });
     }
 
     const prompt = `Generate a workout plan for a user.
@@ -60,11 +66,11 @@ Please provide 4-6 exercises appropriate for this duration and goal, using only 
     });
 
     const workoutPlan = JSON.parse(response.text);
+    generationCache.set(goal, duration, equipment, workoutPlan);
     res.json(workoutPlan);
 
   } catch (error) {
-    console.error('Error generating workout:', error);
-    res.status(502).json({ message: 'Failed to generate workout. Please try again.' });
+    next(error);
   }
 });
 
