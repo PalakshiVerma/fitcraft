@@ -6,6 +6,7 @@ import Navbar from '../components/Navbar'
 import Card from '../components/Card'
 import Button from '../components/Button'
 import Loading from '../components/Loading'
+import SkeletonCard from '../components/SkeletonCard'
 import { useAuth } from '../context/AuthContext'
 import { getWorkouts } from '../services/workoutService'
 
@@ -147,7 +148,11 @@ export default function Dashboard() {
           </div>
 
           {loading ? (
-            <Loading text="Loading workouts..." />
+            <div className="space-y-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </div>
           ) : recentWorkouts.length > 0 ? (
             <div className="space-y-3">
               {recentWorkouts.map((workout, index) => (
