@@ -6,6 +6,7 @@ import Card from '../components/Card'
 import Button from '../components/Button'
 import Modal from '../components/Modal'
 import Loading from '../components/Loading'
+import SkeletonCard from '../components/SkeletonCard'
 import { useAuth } from '../context/AuthContext'
 import { getWorkouts, deleteWorkout } from '../services/workoutService'
 
@@ -184,7 +185,11 @@ export default function History() {
 
         {/* Workouts List */}
         {loading ? (
-          <Loading text="Loading history..." />
+          <div className="space-y-4">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <SkeletonCard key={i} padding="md" />
+            ))}
+          </div>
         ) : filteredWorkouts.length > 0 ? (
           <motion.div
             initial={{ opacity: 0 }}
