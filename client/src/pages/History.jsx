@@ -7,6 +7,7 @@ import Button from '../components/Button'
 import Modal from '../components/Modal'
 import Loading from '../components/Loading'
 import SkeletonCard from '../components/SkeletonCard'
+import ErrorState from '../components/ErrorState'
 import { useAuth } from '../context/AuthContext'
 import { getWorkouts, deleteWorkout } from '../services/workoutService'
 
@@ -22,6 +23,7 @@ export default function History() {
   const { user } = useAuth()
   const [workouts, setWorkouts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [search, setSearch] = useState('')
   const [goalFilter, setGoalFilter] = useState('all')
   const [showFilters, setShowFilters] = useState(false)
@@ -38,6 +40,7 @@ export default function History() {
 
   const fetchWorkouts = async (pageNum = 1, append = false) => {
     if (user) {
+      setError(null)
       try {
         if (!append) setLoading(true)
         const data = await getWorkouts(user.id, { page: pageNum, limit: 10 })
@@ -54,6 +57,7 @@ export default function History() {
         }
       } catch (err) {
         console.error('Failed to fetch workouts:', err)
+        setError('Could not load your workouts. Please check your connection and try again.')
       } finally {
         setLoading(false)
       }
@@ -184,7 +188,9 @@ export default function History() {
         </motion.div>
 
         {/* Workouts List */}
-        {loading ? (
+        {error ? (
+          <ErrorState message={error} onRetry={() => fetchWorkouts(1)} />
+        ) : loading ? (
           <div className="space-y-4">
             {Array.from({ length: 5 }).map((_, i) => (
               <SkeletonCard key={i} padding="md" />

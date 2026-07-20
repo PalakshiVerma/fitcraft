@@ -7,6 +7,7 @@ import Card from '../components/Card'
 import Button from '../components/Button'
 import Loading from '../components/Loading'
 import SkeletonCard from '../components/SkeletonCard'
+import ErrorState from '../components/ErrorState'
 import { useAuth } from '../context/AuthContext'
 import { getWorkouts } from '../services/workoutService'
 
@@ -38,22 +39,27 @@ export default function Dashboard() {
   const { user, profile } = useAuth()
   const [recentWorkouts, setRecentWorkouts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  useEffect(() => {
-    async function fetchWorkouts() {
-      if (user) {
-        try {
-          const response = await getWorkouts(user.id, { limit: 5 })
-          setRecentWorkouts(response.workouts || response)
-        } catch (err) {
-          console.error('Failed to fetch workouts:', err)
-        } finally {
-          setLoading(false)
-        }
-      } else {
+  const fetchWorkouts = async () => {
+    if (user) {
+      setLoading(true)
+      setError(null)
+      try {
+        const response = await getWorkouts(user.id, { limit: 5 })
+        setRecentWorkouts(response.workouts || response)
+      } catch (err) {
+        console.error('Failed to fetch workouts:', err)
+        setError('Could not load your workouts. Please check your connection and try again.')
+      } finally {
         setLoading(false)
       }
+    } else {
+      setLoading(false)
     }
+  }
+
+  useEffect(() => {
     fetchWorkouts()
   }, [user])
 
@@ -147,7 +153,9 @@ export default function Dashboard() {
             </Link>
           </div>
 
-          {loading ? (
+          {error ? (
+            <ErrorState message={error} onRetry={fetchWorkouts} />
+          ) : loading ? (
             <div className="space-y-3">
               {Array.from({ length: 3 }).map((_, i) => (
                 <SkeletonCard key={i} />
