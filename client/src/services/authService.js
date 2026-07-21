@@ -1,21 +1,22 @@
 import api from '../config/api';
 
-export async function login(email, password) {
-  const { data } = await api.post('/auth/login', { email, password });
-  if (data.token) {
+function persist(data) {
+  // JSON.stringify(undefined) returns undefined, which setItem stores as the string "undefined"
+  if (data.token && data.user) {
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
   }
   return data.user;
 }
 
+export async function login(email, password) {
+  const { data } = await api.post('/auth/login', { email, password });
+  return persist(data);
+}
+
 export async function register(email, password) {
   const { data } = await api.post('/auth/register', { email, password });
-  if (data.token) {
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
-  }
-  return data.user;
+  return persist(data);
 }
 
 export function logout() {
@@ -24,6 +25,11 @@ export function logout() {
 }
 
 export function getCurrentUser() {
-  const user = localStorage.getItem('user');
-  return user ? JSON.parse(user) : null;
+  try {
+    return JSON.parse(localStorage.getItem('user'));
+  } catch {
+    // ponytail: stale/corrupt value (e.g. the string "undefined") — drop it
+    logout();
+    return null;
+  }
 }

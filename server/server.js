@@ -23,7 +23,7 @@ app.use(express.json());
 if (process.env.NODE_ENV !== 'test') {
   mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/fitcraft')
   .then(() => logger.info('MongoDB connected'))
-  .catch(err => logger.error({ err }, 'MongoDB connection error'));
+  .catch(err => { logger.error({ err }, 'MongoDB connection error'); process.exit(1); });
 }
 
 // Swagger Docs
